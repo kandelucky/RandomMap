@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5201066372744524473}
   - component: {fileID: 6836780291607502378}
   m_Layer: 0
-  m_Name: Type 4
+  m_Name: Type RightUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,9 +44,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objects:
-  - {fileID: 8494835003965764275, guid: 1b8d108e438c0ca40946d14bdee9c27f, type: 3}
-  - {fileID: 8494835003965764275, guid: 88bc394feb8df3842bd1854a22c6a55c, type: 3}
-  - {fileID: 8494835003965764275, guid: fecf23e80502de849ba14a7f3f1a4c13, type: 3}
-  - {fileID: 8494835003965764275, guid: d386a9234fe2a0f4a890437aa6c2def5, type: 3}
-  - {fileID: 8494835003965764275, guid: 1b8d108e438c0ca40946d14bdee9c27f, type: 3}
-  - {fileID: 8494835003965764275, guid: 1b8d108e438c0ca40946d14bdee9c27f, type: 3}
+  - {fileID: 8795962751807901502, guid: d1c07cba2344470408a98a7d63fa7ef3, type: 3}
+  - {fileID: 8795962751807901502, guid: d1c07cba2344470408a98a7d63fa7ef3, type: 3}

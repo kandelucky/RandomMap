@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2242691456393987471}
   - component: {fileID: 5624513348661455864}
   m_Layer: 0
-  m_Name: Type 0
+  m_Name: Type Up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,9 +44,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objects:
-  - {fileID: 8494835003965764275, guid: 0d93c5669478edd4e885ace45edb8fd2, type: 3}
-  - {fileID: 8494835003965764275, guid: 95e398d364b039d499d4f8a6dbfdae1f, type: 3}
-  - {fileID: 8494835003965764275, guid: 54f75b526c67a844db90f62c29236b8c, type: 3}
-  - {fileID: 8494835003965764275, guid: a39a69d6fa55da34dbbc333f95ade909, type: 3}
-  - {fileID: 8494835003965764275, guid: 95e398d364b039d499d4f8a6dbfdae1f, type: 3}
-  - {fileID: 8494835003965764275, guid: 95e398d364b039d499d4f8a6dbfdae1f, type: 3}
+  - {fileID: 4846946181696206815, guid: 251faad5ef576fe43aa3e3325891d137, type: 3}
+  - {fileID: 4846946181696206815, guid: 251faad5ef576fe43aa3e3325891d137, type: 3}

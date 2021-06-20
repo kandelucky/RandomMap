@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class PopOpener : MonoBehaviour
 {
     public Transform miniMapPop;
+    public LevelGeneration levelGeneration;
     public GameObject popBg;
     public Image img;
     public Text titleText;
@@ -24,7 +25,6 @@ public class PopOpener : MonoBehaviour
     {
         checkPop = true;
         openButton = false;
-        
         popName = "Map";
         popBg.SetActive(true);
         miniMapPop.gameObject.SetActive(true);
@@ -76,6 +76,7 @@ public class PopOpener : MonoBehaviour
         {
             case "Map":
                 miniMapPop.gameObject.SetActive(false);
+                StartCoroutine(levelGeneration.FadeArrows());
                 break;
             case "Life":
                 

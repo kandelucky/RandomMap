@@ -1,17 +1,16 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 
 public class SpawnObj : MonoBehaviour
 {
-    // skripti sachiroa ert wertilze winaswar mititebuli obieqtebidan shemtxvevit archeuli obieqtis shesaqmnelad.
-    // magalitad bevri xeebidan mxolod erti
-    // bevri qvevit mimavali gzebidan mxolo erti.
+   
     public GameObject[] objects;
-    void Awake()
+    public void Create(int randomIndex)
     {
-        int rand = Random.Range(0, objects.Length);
-        GameObject instance  = Instantiate(objects[rand], transform.position, Quaternion.identity);
-        instance.transform.parent = transform;
+        GameObject instanceR  = Instantiate(objects[randomIndex], transform.position, Quaternion.identity);
+        instanceR.transform.parent = transform;
     }
-
     
+
+
 }

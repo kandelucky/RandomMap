@@ -145,10 +145,10 @@ TextureImporter:
     second: Butt_B
   - first:
       213: 7514891481233008712
-    second: Butt_A2
+    second: All_Arrow_Start
   - first:
       213: -5920281769983656131
-    second: Butt_A
+    second: All_Arrow_End
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -1232,6 +1232,48 @@ TextureImporter:
       bones: []
       spriteID: 571cbdd08fa7680c0800000000000000
       internalID: -4573833165745176203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: All_Arrow_Start
+      rect:
+        serializedVersion: 2
+        x: 1074
+        y: 866
+        width: 242
+        height: 133
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 848a0809cf14a4860800000000000000
+      internalID: 7514891481233008712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: All_Arrow_End
+      rect:
+        serializedVersion: 2
+        x: 1072
+        y: 681
+        width: 254
+        height: 160
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3f37e1e81fe6dda0800000000000000
+      internalID: -5920281769983656131
       vertices: []
       indices: 
       edges: []
