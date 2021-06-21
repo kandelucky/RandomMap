@@ -1,0 +1,18 @@
+ToDo's
+------------
+LevelGeneration:
+
+Unique random rooms is Not working well.
+More variety map generation
+Every random(7-12) days unique protected city
+------------
+more unique rooms!
+
+------------
+Mini map:
+An important event icons at map
+proteqted cities icons
+maybe = nature sprites
+
+
+

@@ -3705,6 +3705,7 @@ MonoBehaviour:
   - {fileID: 4454576130263388933, guid: f89bb338c26ebc44d9e17da4bcecec40, type: 3}
   - {fileID: 6834698840701512271, guid: cc1945807e313d8438068a8aeabaa608, type: 3}
   - {fileID: 7556521121201070950, guid: 52a219cc6bc1ece4c89c9b44440ec815, type: 3}
+  - {fileID: 3427223364356956746, guid: 4074109bbf9cd5e46a3c05cbf0fb7fda, type: 3}
   arrowsGroup: {fileID: 1429541466}
   newMiniMap: 0
   day: 0

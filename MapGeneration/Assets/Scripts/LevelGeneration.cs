@@ -51,6 +51,13 @@ public class LevelGeneration : MonoBehaviour
 
     #endregion
 
+    #region Unique Road Values
+    private int[] maxNumbers;
+    private int[] maxNums;
+    private List<int> uniqueNumbers;
+    private List<int> finishedList;
+    SpawnObj spawnObj;
+    #endregion
 
     private void Start()
     {
@@ -353,29 +360,60 @@ public class LevelGeneration : MonoBehaviour
             if (!stopGeneration) MapGeneration();
             else
             {
-                FallEmptyes();
+                FillEmptyes();
                 CheckMiniMapDirection(direction);
                 DirArrows(false);
             }
         }
     }
-    void FallEmptyes()
+
+
+    #region Fill Empty Spaces
+
+    private int maxSpaces;
+    private int maxUniqueSpaces;
+    private List<int> uniqueNums;
+    private List<int> finished;
+
+    void FillEmptyes()
     {
-        StartCoroutine (FallEmptySpaces());
+        maxSpaces = freeSpaces.Length;
+        maxUniqueSpaces = freeSpaces.Length;
+        uniqueNums = new List<int>();
+        finished = new List<int>();
+        StartCoroutine (FillEmptySpaces());
     }
-    IEnumerator FallEmptySpaces()
+    IEnumerator FillEmptySpaces()
     {
+        for (int i = 0; i < maxSpaces; i++)
+        {
+            uniqueNums.Add(i);
+        }
+        for (int i = 0; i < maxSpaces; i++)
+        {
+            int ranNum = uniqueNums[Random.Range(0, uniqueNums.Count)];
+            finished.Add(ranNum);
+            uniqueNums.Remove(ranNum);
+        }
+        maxUniqueSpaces = maxSpaces;
         yield return new WaitForSeconds(0.5f);
         for (int i = 0; i < roadsPositions.Length; i++)
         {
             if (roadsPositions[i].childCount == 0)
             {
-                GameObject instance = Instantiate(freeSpaces[UnityEngine.Random.Range(0, freeSpaces.Length)], roadsPositions[i].transform.position, Quaternion.identity);
+                int uniqueRoad = Random.Range(0, maxUniqueSpaces);
+                GameObject instance = Instantiate(freeSpaces[uniqueRoad], roadsPositions[i].transform.position, Quaternion.identity);
                 instance.transform.parent = roadsPositions[i].transform;
+                finished.RemoveAt(uniqueRoad);
+                maxUniqueSpaces--;
             }
         }
 
     }
+    #endregion
+
+    #region Arrows
+
     void DirArrows(bool start)
     {
         if (start)
@@ -453,6 +491,7 @@ public class LevelGeneration : MonoBehaviour
             yield return null;
         }
     }
+    #endregion
 
     #region Mini Map
     enum MiniMapDirections { Down_Up, Up_Left, Up_Right, Left_Up, Left_Left, Right_Up, Right_Right };
@@ -611,16 +650,11 @@ public class LevelGeneration : MonoBehaviour
     } // for TEST
     #endregion Mini Map
 
-    private int[] maxNumbers;
-    private int[] maxNums;
-    private List<int> uniqueNumbers;
-    private List<int> finishedList;
-    SpawnObj spawnObj;
+    #region UniqueRandomElements
 
     void GenerateUniqueRoadList (int roadValue)
     {
         maxNumbers[roadValue] = spawnObj.objects.Length;
-        Debug.Log(maxNumbers[roadValue]);
         for (int i = 0; i < maxNumbers[roadValue]; i++)
         {
             uniqueNumbers.Add(i);
@@ -641,4 +675,7 @@ public class LevelGeneration : MonoBehaviour
         finishedList.RemoveAt(uniqueRoad);
         maxNums[roadValue]--;
     }
+
+    #endregion 
+
 }
