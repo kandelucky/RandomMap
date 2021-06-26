@@ -1,18 +1,21 @@
+
+LevelGeneration:
+
+Unique random rooms level generator
+road paths generator
+mini map path generator
+mini map size changer
+every 7-11 days safe zone
+
 ToDo's
 ------------
 LevelGeneration:
-
-Unique random rooms is Not working well.
 More variety map generation
-Every random(7-12) days unique protected city
 ------------
 more unique rooms!
-
+more unique safe zones
 ------------
 Mini map:
 An important event icons at map
 proteqted cities icons
-maybe = nature sprites
-
-
 
