@@ -1,7 +1,6 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,6 +17,15 @@ public class LevelGeneration : MonoBehaviour
     bool savedGameIsStarted;
     public bool stopGeneration = true;
 
+    public int days = 0;
+    public int tempDays = 0;
+    public bool buttonIsOn;
+
+    // --------------
+    public Transform backG;
+    public Animator wallAnim;
+    public Text daysText;
+
     public enum Directions { NoDirection, LeftDirection, RightDirection };
     Directions direction;
     // Positions
@@ -30,7 +38,9 @@ public class LevelGeneration : MonoBehaviour
     bool upDirRoad; // for detect more than 1 up direction
     bool HorDirRoad; // for detect more than 1 horisontal direction
     public GameObject[] roadsObj;
-    
+
+    //------------ city
+    public Transform sheltersHolder;
 
     //---------------
     public GameObject[] freeSpaces;
@@ -47,17 +57,9 @@ public class LevelGeneration : MonoBehaviour
     int arrayRowValue = 0;
     int arrayColValue = 6;
     public bool newMiniMap = false;
-    public int day = 0;
 
     #endregion
 
-    #region Unique Road Values
-    private int[] maxNumbers;
-    private int[] maxNums;
-    private List<int> uniqueNumbers;
-    private List<int> finishedList;
-    SpawnObj spawnObj;
-    #endregion
 
     private void Start()
     {
@@ -84,10 +86,12 @@ public class LevelGeneration : MonoBehaviour
     }
     void SetVariables()
     {
-        firstMap = stopGeneration = newMiniMap = true;
+        firstMap = stopGeneration = newMiniMap = buttonIsOn = true;
         upDirRoad = HorDirRoad = false;
+        tempDays = Random.Range(7, 11); //+saved tempdays
     }
 
+    #region Set random road prefabs 
     void RandomBottomUpRoads( Positions pos)
     {
         int[] upRoads;
@@ -106,7 +110,6 @@ public class LevelGeneration : MonoBehaviour
         }
         if (road == Roads.Up) upDirRoad = true;
     }
-
     public void RandomUpRoads(Directions dir) // Roads = UP, UpLeft, UpRight
     {
         int[] upRoads;
@@ -180,43 +183,100 @@ public class LevelGeneration : MonoBehaviour
     }
     public void RandomLeftRoads()
     {
-        int[] leftRoads = new int[] { 0, 2 };
-        leftRoads.Shuffle(2);
-        road = (Roads)leftRoads[UnityEngine.Random.Range(0, leftRoads.Length)];
-        if (upDirRoad) upDirRoad = false;
+        if (!HorDirRoad)
+        {
+            int[] leftRoads = new int[] { 0, 2 };
+            leftRoads.Shuffle(2);
+            road = (Roads)leftRoads[UnityEngine.Random.Range(0, leftRoads.Length)];
+            if (upDirRoad) upDirRoad = false;
+            if (road == Roads.Left) HorDirRoad = true;
+        }
+        else
+        {
+            int[] leftRoads = new int[] { 0, 2, 2, 2 };
+            leftRoads.Shuffle(4);
+            road = (Roads)leftRoads[UnityEngine.Random.Range(0, leftRoads.Length)];
+            if (upDirRoad) upDirRoad = false;
+            if (road != Roads.Left) HorDirRoad = false;
+        }
+            
     }
     public void RandomRightRoads()
     {
-        int[] rightRoads = new int[] { 1, 3 };
-        rightRoads.Shuffle(2);
-        road = (Roads)rightRoads[UnityEngine.Random.Range(0, rightRoads.Length)];
-        if (upDirRoad) upDirRoad = false;
+        if (!HorDirRoad)
+        {
+            int[] rightRoads = new int[] { 1, 3 };
+            rightRoads.Shuffle(2);
+            road = (Roads)rightRoads[UnityEngine.Random.Range(0, rightRoads.Length)];
+            if (upDirRoad) upDirRoad = false;
+            if(road == Roads.Right) HorDirRoad = true;
+        }
+        else
+        {
+            int[] rightRoads = new int[] { 1, 3, 3, 3 };
+            rightRoads.Shuffle(4);
+            road = (Roads)rightRoads[UnityEngine.Random.Range(0, rightRoads.Length)];
+            if (upDirRoad) upDirRoad = false;
+            if (road == Roads.Right) HorDirRoad = true;
+            else HorDirRoad = false;
+        }
+        
     }
+    #endregion
+
     public void CreateMap()
     {
-        for (int i = 0; i < roadsPositions.Length; i++)
+        if (buttonIsOn)
         {
-            if (roadsPositions[i].childCount > 0) Destroy(roadsPositions[i].GetChild(0).gameObject);
-
+            MapCleaner();
+            stopGeneration = false;
+            StartCoroutine(CreateAndOpenMap());
         }
-        for (int i = 0; i < arrowsGroup.GetChild(0).childCount; i++)
+    }
+    IEnumerator CreateAndOpenMap()
+    {
+        buttonIsOn = false;
+        backG.gameObject.SetActive(true);
+        StartCoroutine(FadeIn());
+        wallAnim.Play("CloudsClose");
+        daysText.text = "Days = "+ (days + 1);
+        yield return new WaitForSeconds(0.5f);
+        if (days == tempDays) // create shelter and save game
         {
-            if (arrowsGroup.GetChild(0).GetChild(i).gameObject.activeSelf) arrowsGroup.GetChild(0).GetChild(i).gameObject.SetActive(false);
-            if (arrowsGroup.GetChild(1).GetChild(i).gameObject.activeSelf) arrowsGroup.GetChild(1).GetChild(i).gameObject.SetActive(false);
+            sheltersHolder.GetChild(Random.Range(0, sheltersHolder.childCount)).gameObject.SetActive(true); // ToDo Random unique shelter
+            miniMapArray[arrayRowValue, arrayColValue] = 9; // 9 = mini map shelter icons
+            CheckNextIndexInArray(miniMapDirection);
+            // save game
+            tempDays += Random.Range(7, 11); // generate new shelter position
+            days++;
+            buttonIsOn = true;
         }
-        stopGeneration = false;
-        if (!firstMap) DirArrows(true);
-        maxNumbers = new int[roadsObj.Length];
-        maxNums = new int[roadsObj.Length];
-        uniqueNumbers = new List<int>();
-        finishedList = new List<int>();
-        MapGeneration();
-        day++;
+        else
+        {
+            #region RandomUniqueRoadSets
+            maxNumbers = new int[roadsObj.Length];
+            maxNums = new int[roadsObj.Length];
+            finishedList = new List<List<int>>();
+            for (int i = 0; i < roadsObj.Length; i++)
+            {
+                finishedList.Add(new List<int>());
+            }
+            #endregion
+            if (!firstMap) DirArrows(true);
+            MapGeneration();
+            days++;
+        }
+        yield return new WaitForSeconds(1f);
+        
+        StartCoroutine(FadeOut());
+        wallAnim.Play("CloudsOpen");
+        daysText.text = "";
     }
     public void MapGeneration()
     {
         if (firstMap) // if map created first time
         {
+            backG.GetComponent<Image>().color = new Color(0.32f, 0.39f, 0.35f, 0.93f);
             bool leftPos = UnityEngine.Random.value > 0.5f;
             position = leftPos ? Positions.minLeft : Positions.minRight; // if (leftPos = true) position = MinLeft; else MinRight
             RandomBottomUpRoads(position);
@@ -235,30 +295,35 @@ public class LevelGeneration : MonoBehaviour
         GameObject instance = Instantiate(roadsObj[(int)road], roadsPositions[(int)position].transform.position, Quaternion.identity);
         instance.transform.parent = roadsPositions[(int)position].transform;
         spawnObj = instance.transform.GetComponent<SpawnObj>();
-        if (maxNumbers[(int)road] == 0) GenerateUniqueRoadList((int)road);
+        if (finishedList[(int)road].Count == 0) GenerateUniqueRoadList((int)road);
         ChooseUniqueRoad((int)road);
         NextPositionAndRoad();// check to next position, next road
     }
     void NextPositionAndRoad()
     {
+        bool roadCreated = false;
         if (road == Roads.LeftUp || road == Roads.RightUp || road == Roads.Up) // road ends at top
         {
             switch (position) // set next position
             {
                 case Positions.minLeft:
                     position = Positions.left;
+                    upDirRoad = true;
                     RandomUpRoads(direction);
                     break;
                 case Positions.minRight:
                     position = Positions.right;
+                    upDirRoad = true;
                     RandomUpRoads(direction);
                     break;
                 case Positions.left:
                     position = Positions.maxLeft;
+                    upDirRoad = true;
                     RandomUpRoads(direction);
                     break;
                 case Positions.right:
                     position = Positions.maxRight;
+                    upDirRoad = true;
                     RandomUpRoads(direction);
                     break;
                 case Positions.maxLeft: // end of the map
@@ -297,6 +362,8 @@ public class LevelGeneration : MonoBehaviour
                     if (firstMap) firstMap = false;
                     position = Positions.right;
                     direction = Directions.LeftDirection;
+                    road = Roads.Left;
+                    roadCreated = HorDirRoad = true;
                     break;
                 case Positions.right:
                     position = Positions.left;
@@ -311,7 +378,7 @@ public class LevelGeneration : MonoBehaviour
                     position = Positions.maxLeft;
                     break;
             }
-            RandomLeftRoads();
+            if (!roadCreated) RandomLeftRoads();
         }
         else if (road == Roads.Right || road == Roads.UpRight) // road ends at right
         {
@@ -334,6 +401,8 @@ public class LevelGeneration : MonoBehaviour
                     if (firstMap) firstMap = false;
                     position = Positions.left;
                     direction = Directions.RightDirection;
+                    road = Roads.Right;
+                    roadCreated = HorDirRoad = true;
                     break;
                 case Positions.maxLeft:
                     position = Positions.maxRight;
@@ -345,7 +414,7 @@ public class LevelGeneration : MonoBehaviour
                     direction = Directions.RightDirection;
                     break;
             }
-            RandomRightRoads();
+            if (!roadCreated) RandomRightRoads();
         }
         if (firstMap)
         {
@@ -366,7 +435,25 @@ public class LevelGeneration : MonoBehaviour
             }
         }
     }
-
+    void MapCleaner()
+    {
+        // destroy old map elements
+        for (int i = 0; i < roadsPositions.Length; i++)
+        {
+            if (roadsPositions[i].childCount > 0) Destroy(roadsPositions[i].GetChild(0).gameObject);
+        }
+        // deactivate old map arrows
+        for (int i = 0; i < arrowsGroup.GetChild(0).childCount; i++)
+        {
+            if (arrowsGroup.GetChild(0).GetChild(i).gameObject.activeSelf) arrowsGroup.GetChild(0).GetChild(i).gameObject.SetActive(false);
+            if (arrowsGroup.GetChild(1).GetChild(i).gameObject.activeSelf) arrowsGroup.GetChild(1).GetChild(i).gameObject.SetActive(false);
+        }
+        // deactivate city
+        for (int i = 0; i < sheltersHolder.childCount; i++)
+        {
+            if (sheltersHolder.GetChild(i).gameObject.activeSelf) sheltersHolder.GetChild(i).gameObject.SetActive(false);
+        }
+    }
 
     #region Fill Empty Spaces
 
@@ -402,7 +489,7 @@ public class LevelGeneration : MonoBehaviour
             if (roadsPositions[i].childCount == 0)
             {
                 int uniqueRoad = Random.Range(0, maxUniqueSpaces);
-                GameObject instance = Instantiate(freeSpaces[uniqueRoad], roadsPositions[i].transform.position, Quaternion.identity);
+                GameObject instance = Instantiate(freeSpaces[finished[uniqueRoad]], roadsPositions[i].transform.position, Quaternion.identity);
                 instance.transform.parent = roadsPositions[i].transform;
                 finished.RemoveAt(uniqueRoad);
                 maxUniqueSpaces--;
@@ -416,6 +503,8 @@ public class LevelGeneration : MonoBehaviour
 
     void DirArrows(bool start)
     {
+        arrowsGroup.GetChild(0).GetComponent<CanvasGroup>().alpha = 0;
+        arrowsGroup.GetChild(1).GetComponent<CanvasGroup>().alpha = 0;
         if (start)
         {
             switch (position)
@@ -472,24 +561,24 @@ public class LevelGeneration : MonoBehaviour
     }
     public IEnumerator FadeArrows()
     {
-
+        yield return new WaitForSeconds(2f);
         arrowsGroup.GetChild(0).GetComponent<CanvasGroup>().alpha = 1;
-        arrowsGroup.GetChild(1).GetComponent<CanvasGroup>().alpha = 0;
         yield return new WaitForSeconds(0.5f);
         // loop over 1 second
-        for (float i = 1f; i >= 0; i -= Time.deltaTime )
+        for (float i = 1f; i >= 0; i -= Time.deltaTime * 1)
         {
             // set color with i as alpha
             arrowsGroup.GetChild(0).GetComponent<CanvasGroup>().alpha = i;
             if (i >= 0.65f && arrowsGroup.GetChild(1).GetComponent<CanvasGroup>().alpha == 0) arrowsGroup.GetChild(1).GetComponent<CanvasGroup>().alpha = 1;
             yield return null;
         }
-        for (float a = 1f; a >= 0; a -= Time.deltaTime)
+        for (float a = 1f; a >= 0; a -= Time.deltaTime * 1)
         {
             // set color with i as alpha
             arrowsGroup.GetChild(1).GetComponent<CanvasGroup>().alpha = a;
             yield return null;
         }
+        buttonIsOn = true;
     }
     #endregion
 
@@ -558,12 +647,10 @@ public class LevelGeneration : MonoBehaviour
             case MiniMapDirections.Up_Left:
                 arrayColValue--;
                 if (arrayColValue == 0) AddArrayFirstCols();
-                // ToDo if is less of 0 - add in first of array columns
                 break;
             case MiniMapDirections.Up_Right:
                 arrayColValue++;
                 if (arrayColValue == cols) AddArrayEndCols();
-                // ToDo if is grater of 13 - add in end of array columns
                 break;
             case MiniMapDirections.Left_Up:
                 arrayRowValue++;
@@ -572,7 +659,6 @@ public class LevelGeneration : MonoBehaviour
             case MiniMapDirections.Left_Left:
                 arrayColValue--;
                 if (arrayColValue == 0) AddArrayFirstCols();
-                // ToDo if is less of 0 - add in first of array columns
                 break;
             case MiniMapDirections.Right_Up:
                 arrayRowValue++;
@@ -581,7 +667,6 @@ public class LevelGeneration : MonoBehaviour
             case MiniMapDirections.Right_Right:
                 arrayColValue++;
                 if (arrayColValue == cols) AddArrayEndCols();
-                // ToDo if is grater of 13 - add in end of array columns
                 break;
         }
     }
@@ -652,8 +737,17 @@ public class LevelGeneration : MonoBehaviour
 
     #region UniqueRandomElements
 
+    private int[] maxNumbers;
+    private int[] maxNums;
+    private List<int> uniqueNumbers;
+    private List<int> uniqueNumbersNew;
+    private List<List<int>> finishedList;
+    SpawnObj spawnObj;
+
     void GenerateUniqueRoadList (int roadValue)
     {
+        uniqueNumbers = new List<int>();
+        uniqueNumbersNew = new List<int>();
         maxNumbers[roadValue] = spawnObj.objects.Length;
         for (int i = 0; i < maxNumbers[roadValue]; i++)
         {
@@ -662,20 +756,53 @@ public class LevelGeneration : MonoBehaviour
         for (int i = 0; i < maxNumbers[roadValue]; i++)
         {
             int ranNum = uniqueNumbers[Random.Range(0, uniqueNumbers.Count)];
-            finishedList.Add(ranNum);
+            uniqueNumbersNew.Add(ranNum);
             uniqueNumbers.Remove(ranNum);
         }
+        finishedList[roadValue]=uniqueNumbersNew;
         maxNums[roadValue] = maxNumbers[roadValue];
     }
     
     public void ChooseUniqueRoad (int roadValue)
     {
         int uniqueRoad = Random.Range(0, maxNums[roadValue]);
-        spawnObj.Create(uniqueRoad);
-        finishedList.RemoveAt(uniqueRoad);
+        spawnObj.Create(finishedList[roadValue][uniqueRoad]);
+        finishedList[roadValue].RemoveAt(uniqueRoad);
         maxNums[roadValue]--;
     }
 
-    #endregion 
+    #endregion
+
+    #region BackGround Fade
+    // fade from transparent to opaque
+    IEnumerator FadeIn()
+    {
+        Image tempImage = backG.GetComponent<Image>();
+        tempImage.color = new Color(0.32f, 0.39f, 0.35f, 0f);
+        // loop over 1 second
+        for (float i = 0; i <= 0.94f; i += Time.deltaTime * 7)
+        {
+            // set color with i as alpha
+            tempImage.color = new Color(0.32f, 0.39f, 0.35f, i);
+            yield return null;
+        }
+
+    }
+
+    // fade from opaque to transparent
+    IEnumerator FadeOut()
+    {
+        daysText.text = "";
+        Image tempImage = backG.GetComponent<Image>();
+        // loop over 1 second backwards
+        for (float i = 0.94f; i >= 0; i -= Time.deltaTime * 7)
+        {
+            // set color with i as alpha
+            tempImage.color = new Color(0.32f, 0.39f, 0.35f, i);
+            yield return null;
+        }
+        tempImage.color = new Color(0.32f, 0.39f, 0.35f, 0f);
+    }
+    #endregion
 
 }

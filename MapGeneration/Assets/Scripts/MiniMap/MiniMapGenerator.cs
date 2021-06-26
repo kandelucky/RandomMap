@@ -26,10 +26,11 @@ public class MiniMapGenerator : MonoBehaviour
     }
     public void StartGenerateBigMap()
     {
+        levelGeneration.buttonIsOn = false;
         rows = levelGeneration.miniMapArray.GetLength(0);
         cols = levelGeneration.miniMapArray.GetLength(1);
         content.GetComponent<GridLayoutGroup>().constraintCount = cols;
-        days.text = "DAYS - " + levelGeneration.day.ToString();
+        days.text = "DAYS - " + levelGeneration.days.ToString();
         if (levelGeneration.newMiniMap) StartCoroutine(GenerateMiniMap());
         else EditMiniMap();
     }
@@ -50,9 +51,13 @@ public class MiniMapGenerator : MonoBehaviour
                 if (levelGeneration.miniMapArray[row, col] == 0)
                 {
                     newTile.GetComponent<Image>().sprite = mapPathImages[7].GetComponent<Image>().sprite;
+                    newTile.GetComponent<Image>().color = mapPathImages[7].GetComponent<Image>().color;
                 }
-                else newTile.GetComponent<Image>().sprite = mapPathImages[levelGeneration.miniMapArray[row, col] - 1].GetComponent<Image>().sprite;
-
+                else
+                {
+                    newTile.GetComponent<Image>().sprite = mapPathImages[levelGeneration.miniMapArray[row, col] - 1].GetComponent<Image>().sprite;
+                    newTile.GetComponent<Image>().color = mapPathImages[levelGeneration.miniMapArray[row, col] - 1].GetComponent<Image>().color;
+                }
             }
         }
         levelGeneration.newMiniMap = startMap = false;
@@ -68,9 +73,13 @@ public class MiniMapGenerator : MonoBehaviour
                 if (levelGeneration.miniMapArray[row, col] == 0)
                 {
                     newTile.GetComponent<Image>().sprite = mapPathImages[7].GetComponent<Image>().sprite;
+                    newTile.GetComponent<Image>().color = mapPathImages[7].GetComponent<Image>().color;
                 }
-                else newTile.GetComponent<Image>().sprite = mapPathImages[levelGeneration.miniMapArray[row, col] - 1].GetComponent<Image>().sprite;
-
+                else
+                {
+                    newTile.GetComponent<Image>().sprite = mapPathImages[levelGeneration.miniMapArray[row, col] - 1].GetComponent<Image>().sprite;
+                    newTile.GetComponent<Image>().color = mapPathImages[levelGeneration.miniMapArray[row, col] - 1].GetComponent<Image>().color;
+                }
             }
         }
     }

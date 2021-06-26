@@ -77,6 +77,7 @@ public class PopOpener : MonoBehaviour
             case "Map":
                 miniMapPop.gameObject.SetActive(false);
                 StartCoroutine(levelGeneration.FadeArrows());
+                
                 break;
             case "Life":
                 
